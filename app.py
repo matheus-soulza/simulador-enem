@@ -299,20 +299,15 @@ if submitted:
             st.info("Sugestões de colunas parecidas (do modelo):")
             st.json(_suggestions)
 
+    # predição
+    yhat = float(model.predict(row)[0])
+    st.success(f"🎯 Nota estimada: **{yhat:.1f}**")
+    st.caption("Estimativa baseada nas suas respostas. Não representa garantia de resultado.")
+
     # mostra os dados preparados
     st.subheader("📦 Dados enviados para o modelo (dict)")
     st.json(inputs)
 
     st.subheader("📊 Vetor de features (1 linha)")
     st.dataframe(row)
-
-    # (extra) checagem rápida das flags *_nao_sei
-    cols_debug = [c for c in row.columns if "nao_sei" in c.lower()]
-    if cols_debug:
-        st.caption("Soma das flags *_nao_sei na linha:")
-        st.write(row[cols_debug].sum(axis=0))
-
-    # predição
-    yhat = float(model.predict(row)[0])
-    st.success(f"🎯 Nota estimada: **{yhat:.1f}**")
-    st.caption("Estimativa baseada nas suas respostas. Não representa garantia de resultado.")
+    
