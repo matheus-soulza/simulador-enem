@@ -13,19 +13,33 @@ st.set_page_config(page_title="Simulador ENEM", page_icon="🎯", layout="wide")
 # --- CSS: permite quebra de linha nos selectboxes e deixa o menu mais largo ---
 st.markdown("""
 <style>
-/* Valor selecionado na "caixa" do select */
-div[data-baseweb="select"] span {
-  white-space: normal !important;   /* permite quebrar linha no label escolhido */
+/* Valor selecionado na caixa e itens do menu: permitir quebra de linha */
+div[data-baseweb="select"] span,
+div[data-baseweb="select"] .truncate,
+div[data-baseweb="select"] [role="option"] span {
+  white-space: pre-wrap !important;   /* respeita \\n e quebra */
+  word-break: break-word !important;  /* quebra palavras grandes */
+  overflow-wrap: anywhere !important; /* quebra onde precisar */
 }
 
-/* Itens dentro do menu dropdown */
-div[data-baseweb="select"] div[role="listbox"] span {
-  white-space: normal !important;   /* permite quebrar linha nas opções longas */
+/* Dropdown: também permite quebra nas opções */
+div[data-baseweb="select"] div[role="listbox"] {
+  white-space: normal !important;
 }
 
-/* Evita um menu estreito; usa toda a largura do container */
+/* Ocupa toda a largura do container */
 div[data-baseweb="select"] > div {
+  width: 100% !important;
   min-width: 100% !important;
+}
+
+/* Ajustes específicos para telas pequenas */
+@media (max-width: 600px) {
+  /* Caixa e menu mais largos */
+  div[data-baseweb="select"] { width: 100vw !important; }
+  div[data-baseweb="select"] div[role="listbox"] {
+    max-width: 95vw !important;
+  }
 }
 </style>
 """, unsafe_allow_html=True)
