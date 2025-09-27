@@ -215,8 +215,6 @@ with st.form("form"):
 
     # ====== Escolaridade dos pais ======
     instr_pai_sel = st.selectbox("Instrução do pai", ["Não sei"] + INSTR_LIST, index=0)
-    st.markdown('<div class="legend-title">Legenda — Escolaridade</div>', unsafe_allow_html=True)
-    st.markdown('<div class="legend-box"><ul>' + "".join([f"<li>{x}</li>" for x in INSTR_LIST]) + "</ul></div>", unsafe_allow_html=True)
 
     instr_mae_sel = st.selectbox("Instrução da mãe", ["Não sei"] + INSTR_LIST, index=0)
     st.markdown('<div class="legend-title">Legenda — Escolaridade</div>', unsafe_allow_html=True)
@@ -224,8 +222,6 @@ with st.form("form"):
 
     # ====== Profissão dos pais ======
     prof_pai_sel  = st.selectbox("Profissão do pai (grupo)", ["Não sei"] + PROF_LIST, index=0)
-    st.markdown('<div class="legend-title">Legenda — Profissões</div>', unsafe_allow_html=True)
-    st.markdown('<div class="legend-box"><ul>' + "".join([f"<li>{x}</li>" for x in PROF_LIST]) + "</ul></div>", unsafe_allow_html=True)
 
     prof_mae_sel  = st.selectbox("Profissão da mãe (grupo)", ["Não sei"] + PROF_LIST, index=0)
     st.markdown('<div class="legend-title">Legenda — Profissões</div>', unsafe_allow_html=True)
