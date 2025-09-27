@@ -10,6 +10,32 @@ import difflib
 # ====== UI / página ======
 st.set_page_config(page_title="Simulador ENEM", page_icon="🎯", layout="wide")
 
+# ====== CSS (highlight das legendas) ======
+st.markdown("""
+<style>
+.legend-title {
+  font-weight: 700;
+  padding: 4px 8px;
+  border-left: 6px solid #ffae00;
+  background: linear-gradient(90deg, rgba(255,174,0,0.18), rgba(255,174,0,0.05));
+  border-radius: 6px;
+  display: inline-block;
+}
+.legend-box {
+  margin-top: 6px;
+  margin-bottom: 12px;
+  padding: 10px 12px;
+  background: rgba(255,174,0,0.08);
+  border: 1px solid rgba(255,174,0,0.22);
+  border-radius: 8px;
+}
+.legend-box ul {
+  margin: 0;
+  padding-left: 20px;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # ====== caminhos ======
 MODEL_PATH = "enem_lgbm.pkl"
 FEATURES_PATH = "enem_features.json"
@@ -150,6 +176,7 @@ st.title("🎯 Simulador de Nota Estimada do ENEM")
 with st.form("form"):
     st.subheader("Preencha suas informações")
     c1, c2 = st.columns(2)
+
     with c1:
         fx = st.selectbox("Faixa etária", FAIXA_ETARIA, index=1)
         qtd = st.number_input("Quantidade de residentes no domicílio", 1, 20, 3)
@@ -157,34 +184,52 @@ with st.form("form"):
         sexo = st.radio("Sexo", ["F","M"], horizontal=True)
         escola = st.radio("Tipo de escola", ["1","2","3"], index=1, captions=["Não respondeu","Pública","Privada"])
         uf = st.selectbox("UF da prova", UF_LIST, index=24)
+
     with c2:
         lingua = st.radio("Língua estrangeira feita", ["0","1"], index=0, captions=["Inglês","Espanhol"])
-        est_civil = st.selectbox("Estado civil", ["0.0","1.0","2.0","3.0","4.0"], index=0,
+        est_civil = st.selectbox(
+            "Estado civil", ["0.0","1.0","2.0","3.0","4.0"], index=0,
             format_func=lambda x: {
                 "0.0":"Não informado","1.0":"Solteiro(a)","2.0":"Casado/Companheiro",
                 "3.0":"Divorciado(a)","4.0":"Viúvo(a)"
-            }[x])
-        raca = st.selectbox("Cor/Raça", ["0","1","2","3","4","5","6"], index=3,
+            }[x]
+        )
+        raca = st.selectbox(
+            "Cor/Raça", ["0","1","2","3","4","5","6"], index=3,
             format_func=lambda x: {
                 "0":"Não declarado","1":"Branco","2":"Preto","3":"Pardo",
                 "4":"Amarelo","5":"Indígena","6":"Sem informação"
-            }[x])
-        nac = st.selectbox("Nacionalidade", ["0","1","2","3","4"], index=1,
+            }[x]
+        )
+        nac = st.selectbox(
+            "Nacionalidade", ["0","1","2","3","4"], index=1,
             format_func=lambda x: {
                 "0":"Não informada","1":"Brasileiro","2":"Naturalizado",
                 "3":"Estrangeiro","4":"Brasileiro nascido no exterior"
-            }[x])
-        st_conc = st.selectbox("Situação de conclusão do EM", ["1","2","4"], index=1,
-            format_func=lambda x: {"1":"Já concluiu","2":"Conclui este ano","4":"Conclui depois deste ano"}[x])
+            }[x]
+        )
+        st_conc = st.selectbox(
+            "Situação de conclusão do EM", ["1","2","4"], index=1,
+            format_func=lambda x: {"1":"Já concluiu","2":"Conclui este ano","4":"Conclui depois deste ano"}[x]
+        )
 
-    st.markdown("**Escolaridade e profissão dos pais**")
+    # ====== Escolaridade dos pais ======
     instr_pai_sel = st.selectbox("Instrução do pai", ["Não sei"] + INSTR_LIST, index=0)
-    instr_mae_sel = st.selectbox("Instrução da mãe", ["Não sei"] + INSTR_LIST, index=0)
-    prof_pai_sel  = st.selectbox("Profissão do pai (grupo)", ["Não sei"] + PROF_LIST, index=0)
-    prof_mae_sel  = st.selectbox("Profissão da mãe (grupo)", ["Não sei"] + PROF_LIST, index=0)
+    st.markdown('<div class="legend-title">Legenda — Escolaridade</div>', unsafe_allow_html=True)
+    st.markdown('<div class="legend-box"><ul>' + "".join([f"<li>{x}</li>" for x in INSTR_LIST]) + "</ul></div>", unsafe_allow_html=True)
 
-    st.caption("Legenda escolaridade: " + " | ".join(INSTR_LIST))
-    st.caption("Legenda profissões: " + " | ".join(PROF_LIST))
+    instr_mae_sel = st.selectbox("Instrução da mãe", ["Não sei"] + INSTR_LIST, index=0)
+    st.markdown('<div class="legend-title">Legenda — Escolaridade</div>', unsafe_allow_html=True)
+    st.markdown('<div class="legend-box"><ul>' + "".join([f"<li>{x}</li>" for x in INSTR_LIST]) + "</ul></div>", unsafe_allow_html=True)
+
+    # ====== Profissão dos pais ======
+    prof_pai_sel  = st.selectbox("Profissão do pai (grupo)", ["Não sei"] + PROF_LIST, index=0)
+    st.markdown('<div class="legend-title">Legenda — Profissões</div>', unsafe_allow_html=True)
+    st.markdown('<div class="legend-box"><ul>' + "".join([f"<li>{x}</li>" for x in PROF_LIST]) + "</ul></div>", unsafe_allow_html=True)
+
+    prof_mae_sel  = st.selectbox("Profissão da mãe (grupo)", ["Não sei"] + PROF_LIST, index=0)
+    st.markdown('<div class="legend-title">Legenda — Profissões</div>', unsafe_allow_html=True)
+    st.markdown('<div class="legend-box"><ul>' + "".join([f"<li>{x}</li>" for x in PROF_LIST]) + "</ul></div>", unsafe_allow_html=True)
 
     st.markdown("**Acesso à internet**")
     internet = st.radio("Acesso à internet no domicílio", ["Tem acesso","Não tem acesso"], horizontal=True)
@@ -222,6 +267,7 @@ if submitted:
     )
 
     row = make_input_row(inputs, FEATURE_LIST)
+
     if _missing_cols:
         st.warning("Algumas colunas não foram localizadas: " + ", ".join(sorted(set(_missing_cols))))
         if _suggestions:
