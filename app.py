@@ -7,6 +7,29 @@ import unicodedata
 import re
 import difflib
 
+# ====== UI / página ======
+st.set_page_config(page_title="Simulador ENEM", page_icon="🎯", layout="wide")
+
+# --- CSS: permite quebra de linha nos selectboxes e deixa o menu mais largo ---
+st.markdown("""
+<style>
+/* Valor selecionado na "caixa" do select */
+div[data-baseweb="select"] span {
+  white-space: normal !important;   /* permite quebrar linha no label escolhido */
+}
+
+/* Itens dentro do menu dropdown */
+div[data-baseweb="select"] div[role="listbox"] span {
+  white-space: normal !important;   /* permite quebrar linha nas opções longas */
+}
+
+/* Evita um menu estreito; usa toda a largura do container */
+div[data-baseweb="select"] > div {
+  min-width: 100% !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
 # ====== caminhos ======
 MODEL_PATH = "enem_lgbm.pkl"
 FEATURES_PATH = "enem_features.json"
@@ -88,22 +111,22 @@ PROF_MAP = {txt: i+1 for i, txt in enumerate(PROF_LIST)}  # 1..5
 
 RENDA_LIST = [
     "Nenhuma Renda",
-    "Até R$ 1.212,00",
-    "R$ 1.212,01 – R$ 1.818,00",
-    "R$ 1.818,01 – R$ 2.424,00",
-    "R$ 2.424,01 – R$ 3.030,00",
-    "R$ 3.030,01 – R$ 3.636,00",
-    "R$ 3.636,01 – R$ 4.848,00",
-    "R$ 4.848,01 – R$ 6.060,00",
-    "R$ 6.060,01 – R$ 7.272,00",
-    "R$ 7.272,01 – R$ 8.484,00",
-    "R$ 8.484,01 – R$ 9.696,00",
-    "R$ 9.696,01 – R$ 10.908,00",
-    "R$ 10.908,01 – R$ 12.120,00",
-    "R$ 12.120,01 – R$ 14.544,00",
-    "R$ 14.544,01 – R$ 18.180,00",
-    "R$ 18.180,01 – R$ 24.240,00",
-    "Acima de R$ 24.240,00",
+    "Até 1 Salário Mínimo",
+    "De 1 a 1,5 Salários Mínimos",
+    "De 1,5 a 2 Salários Mínimos",
+    "De 2 a 2,5 Salários Mínimos",
+    "De 2,5 a 3 Salários Mínimos",
+    "De 3 a 4 Salários Mínimos",
+    "De 4 a 5 Salários Mínimos",
+    "De 5 a 6 Salários Mínimos",
+    "De 6 a 7 Salários Mínimos",
+    "De 7 a 8 Salários Mínimos",
+    "De 8 a 9 Salários Mínimos",
+    "De 9 a 10 Salários Mínimos",
+    "De 10 a 12 Salários Mínimos",
+    "De 12 a 15 Salários Mínimos",
+    "De 15 a 20 Salários Mínimos",
+    "Acima de 20 Salários Mínimos",
 ]
 RENDA_MAP = {txt: i+1 for i, txt in enumerate(RENDA_LIST)}  # 1..17
 
@@ -186,8 +209,7 @@ def make_input_row(inputs: dict, feature_list):
     # garante ordem final
     return row[feature_list]
 
-# ====== UI ======
-st.set_page_config(page_title="Simulador ENEM", page_icon="🎯", layout="centered")
+# ====== UI principal ======
 st.title("🎯 Simulador de Nota Estimada do ENEM")
 
 with st.form("form"):
@@ -239,12 +261,12 @@ with st.form("form"):
         )
 
     st.markdown("**Escolaridade e profissão dos pais**")
-    c3, c4 = st.columns(2)
-    with c3:
+
+    # Uma única coluna larga para visualizar textos longos sem corte
+    with st.container():
         instr_pai_sel = st.selectbox("Instrução do pai", ["Não sei"] + INSTR_LIST, index=0)
-        prof_pai_sel  = st.selectbox("Profissão do pai (grupo)", ["Não sei"] + PROF_LIST, index=0)
-    with c4:
         instr_mae_sel = st.selectbox("Instrução da mãe", ["Não sei"] + INSTR_LIST, index=0)
+        prof_pai_sel  = st.selectbox("Profissão do pai (grupo)", ["Não sei"] + PROF_LIST, index=0)
         prof_mae_sel  = st.selectbox("Profissão da mãe (grupo)", ["Não sei"] + PROF_LIST, index=0)
 
     st.markdown("**Acesso à internet**")
@@ -310,4 +332,3 @@ if submitted:
 
     st.subheader("📊 Vetor de features (1 linha)")
     st.dataframe(row)
-    
